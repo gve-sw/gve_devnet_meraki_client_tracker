@@ -1,0 +1,698 @@
+{% extends "masterpage.html" %}
+
+{% block content %}
+<div class="content content--alt">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Middle Rail -->
+            <div class="col-md-4">
+                <div class="section">
+                    <div class="panel panel--loose panel--raised base-margin-bottom">
+                        <h2 class="subtitle">Filter</h2>
+                        <hr>
+                        <form action="/display" method="POST">
+                            <!--Mac Field-->
+                                <div class="form-group base-margin-bottom">
+                                    <div class="form-group__text">
+                                        <input id="input-layout-stacked-1" type="text" name="mac_address" pattern="[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}" required>
+                                        <label for="input-layout-stacked-1">
+                                            <span>MAC Address</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            <!--IP Field (Optional)-->
+                                <div class="form-group base-margin-bottom">
+                                    <div class="form-group__text">
+                                        <input id="input-layout-stacked-2" type="text" name="ip_address" pattern="[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}" required>
+                                        <label for="input-layout-stacked-2">IP Address - Optional</label>
+                                    </div>
+                                    <div class="help-block" role="alert">
+                                        <span>Takes precedence over MAC Address Field</span>
+                                    </div>
+
+                                </div>
+
+                            <!--Dropdown Select-->
+                            <div class="form-group base-margin-bottom">
+                                    <div class="form-group dropdown">
+                                        <div class="form-group__text select">
+                                            <input id="select-type-styled" name="time_period">
+                                            <label for="select-type-styled">Time Period</label>
+                                        </div>
+                                        <div class="dropdown__menu" id="dropdown-option">
+                                            <a>24 Hours</a>
+                                            <a>72 Hours</a>
+                                            <a>1 Week</a>
+                                        </div>
+                                    </div>
+                                    <div class="help-block" role="alert">
+                                        <span>Default: 24 Hours</span>
+                                    </div>
+                            </div>
+
+                            <!--Custom Field-->
+                            <div id="custom-interval" class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input type="number" min=0 max=743 name="custom-interval">
+                                    <label for="custom-interval">Custom Interval (Hours) - Optional</label>
+                                </div>
+                                <div class="help-block" role="alert">
+                                    <span>Must be <= 31 days, takes precedence over Time Period Field</span>
+                                </div>
+                            </div>
+
+                            <!-- Button area-->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input id="settings-submit" class="btn btn-primary" type="submit" value="Filter">
+                                </div>
+                                <div class="col-lg-8" id="loading-panel"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Rail -->
+            <div class="col-0 col-xl-3 col-md-3"></div>
+        </div>
+    </div>
+    {% if table_flag == true %}
+        {% if cat_details_table %}
+        <div class="container-fluid">
+            <h5 class="display-4">Catalyst Client Details</h5>
+            <hr>
+
+            <div class="row">
+                <!-- Middle Rail -->
+                <div class="col-md-4">
+                    <div class="section">
+                        <div class="panel panel--loose panel--raised">
+                            <h2 class="subtitle">Client Status: Online</h2>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-mac-0" type="text" value="{{ cat_details_table.mac }}" readonly>
+                                            <label for="client-mac-0">Client MAC Address</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-ip-0" type="text" value="{{ cat_details_table.lan_ip }}" readonly>
+                                            <label for="client-ip-0">IP Address</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-vlan-0" type="text" value="{{ cat_details_table.vlan }}" readonly>
+                                            <label for="client-vlan-0">VLAN</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-switch-0" type="text" value="{{ cat_details_table.switch_hostname }}" readonly>
+                                            <label for="client-switch-0">Switch Hostname</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-interface-0" type="text" value="{{ cat_details_table.interface }}" readonly>
+                                            <label for="client-interface-0">Interface</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-interface-status-0" type="text" value="{{ cat_details_table.interface_status.status }}" readonly>
+                                            <label for="client-interface-status-0">Interface Status</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-interface-mode-0" type="text" value="{{ cat_details_table.interface_status.mode }}" readonly>
+                                            <label for="client-interface-mode-0">Interface Mode</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group base-margin-bottom">
+                                        <div class="form-group__text">
+                                            <input id="client-interface-allowed-vlans-0" type="text" value="{{ cat_details_table.interface_status.allowed_vlans }}" readonly>
+                                            <label for="client-interface-allowed-vlans-0">Allowed VLANs</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Neighbor Tables -->
+                            <div class="row">
+
+                            </div>
+                       </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="section">
+                        <div class="panel panel--loose panel--raised">
+                            <h2 class="subtitle">Switch CDP Neighbors</h2>
+                            <hr>
+                            <div class="responsive-table">
+                                <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                    <thead>
+                                        <tr>
+                                            <th>Neighbor</th>
+                                            <th>Local Interface</th>
+                                            <th>Capability</th>
+                                            <th>Platform</th>
+                                            <th>Neighbor Interface</th>
+                                        </tr>
+                                    </thead>
+                                    {% set cdp_name = cat_details_table_cdp[0] %}
+                                    {% set cdp_data = cat_details_table_cdp[1] %}
+                                    <tbody id="{{cdp_name}}-table">
+                                    {% for value in cdp_data %}
+                                        <tr>
+                                            <td>{{value.neighbor}}</td>
+                                            <td>{{value.local_interface}}</td>
+                                            <td>{{value.capability}}</td>
+                                            <td>{{value.platform}}</td>
+                                            <td>{{value.neighbor_interface}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% set pagination = cat_details_table_cdp[2] %}
+
+                            <!-- Pagination section -->
+                            {% if pagination != '' %}
+                                <ul class="pagination" id="{{cdp_name}}-pagination">
+                                    {{pagination | safe}}
+                                </ul>
+                            {% endif %}
+
+                       </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="section">
+                        <div class="panel panel--loose panel--raised">
+                            <h2 class="subtitle">Switch LLDP Neighbors</h2>
+                            <hr>
+                            <div class="responsive-table">
+                                <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                    <thead>
+                                        <tr>
+                                            <th>Neighbor</th>
+                                            <th>Local Interface</th>
+                                            <th>Capability</th>
+                                            <th>Neighbor Interface</th>
+                                        </tr>
+                                    </thead>
+                                    {% set lldp_name = cat_details_table_lldp[0] %}
+                                    {% set lldp_data = cat_details_table_lldp[1] %}
+                                    <tbody id="{{lldp_name}}-table">
+                                    {% for value in lldp_data %}
+                                        <tr>
+                                            <td>{{value.neighbor}}</td>
+                                            <td>{{value.local_interface}}</td>
+                                            <td>{{value.capabilities}}</td>
+                                            <td>{{value.neighbor_interface}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% set pagination = cat_details_table_lldp[2] %}
+                            <!-- Pagination section -->
+                            {% if pagination != '' %}
+                                <ul class="pagination" id="{{lldp_name}}-pagination">
+                                    {{pagination | safe}}
+                                </ul>
+                            {% endif %}
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row base-margin-bottom">
+                <div class="col-md-6">
+                    <div class="section">
+                        <!-- Button area-->
+                        <a href="{{ url_for('download_catalyst_client') }}" class="btn btn-primary">Download Data</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="container-fluid">
+            <h5 class="display-4">Meraki Client Details</h5>
+            <hr>
+
+            <!--Build Network Tabs-->
+            <ul id="details" class="tabs tabs--bordered" style="overflow-x: scroll">
+                <li id="details-0" class="tab active">
+                    <a tabindex="0">{{network_names[0]}}</a>
+                </li>
+                {% for name in network_names[1:] %}
+                    <li id="details-{{loop.index}}" class="tab">
+                        <a tabindex="0">{{name}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div id="details-content" class="tab-content">
+                    <div id="details-0-content" class="tab-pane active">
+                        <div class="row">
+                            <!-- Middle Rail -->
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <div class="panel panel--loose panel--raised">
+                                        {% set client_data = details_tables[0][1] %}
+                                        <h2 class="subtitle">Client Status: {{client_data.status}}</h2>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="mac-0" type="text" value="{{ client_data.mac }}" readonly>
+                                                        <label for="mac-0">Client MAC Address</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="ip-0" type="text" value="{{ client_data.ip }}" readonly>
+                                                        <label for="ip-0">IP Address</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="vlan-0" type="text" value="{{ client_data.vlan }}" readonly>
+                                                        <label for="vlan-0">VLAN</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="manufacturer-0" type="text" value="{{ client_data.manufacturer }}" readonly>
+                                                        <label for="manufacturer-0">Device Manufacturer</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="os-0" type="text" value="{{ client_data.os }}" readonly>
+                                                        <label for="os-0">Device OS</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="user-0" type="text" value="{{ client_data.user }}" readonly>
+                                                        <label for="user-0">Device User</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="description-0" type="text" value="{{ client_data.description }}" readonly>
+                                                        <label for="description-0">Device Description</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="serial-0" type="text" value="{{ client_data.recentDeviceSerial }}" readonly>
+                                                        <label for="serial-0">Recent Device (Serial)</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="name-0" type="text" value="{{ client_data.recentDeviceName }}" readonly>
+                                                        <label for="name-0">Recent Device (Name)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="connection-0" type="text" value="{{ client_data.recentDeviceConnection }}" readonly>
+                                                        <label for="connection-0">Connection Type</label>
+                                                    </div>
+                                                </div>
+
+                                                {% if client_data.recentDeviceConnection == 'Wireless'%}
+                                                    <div class="form-group base-margin-bottom">
+                                                        <div class="form-group__text">
+                                                            <input id="ssid-0" type="text" value="{{ client_data.ssid }}" readonly>
+                                                            <label for="ssid-0">SSID</label>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="form-group base-margin-bottom">
+                                                        <div class="form-group__text">
+                                                            <input id="switchport-0" type="text" value="{{ client_data.switchport }}" readonly>
+                                                            <label for="switchport-0">Switchport</label>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Right Rail -->
+                            <div class="col-0 col-xl-3 col-md-3"></div>
+                        </div>
+                    </div>
+                {% for det_table in details_tables[1:] %}
+                    <div id="details-{{loop.index}}-content" class="tab-pane">
+                        <div class="row">
+                            <!-- Middle Rail -->
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <div class="panel panel--loose panel--raised">
+                                        {% set client_data = det_table[1] %}
+                                        <h2 class="subtitle">Client Status: {{client_data.status}}</h2>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="mac-{{loop.index}}" type="text" value="{{ client_data.mac }}" readonly>
+                                                        <label for="mac-{{loop.index}}">Client MAC Address</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="ip-{{loop.index}}" type="text" value="{{ client_data.ip }}" readonly>
+                                                        <label for="ip-{{loop.index}}">IP Address</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="vlan-{{loop.index}}" type="text" value="{{ client_data.vlan }}" readonly>
+                                                        <label for="vlan-{{loop.index}}">VLAN</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="manufacturer-{{loop.index}}" type="text" value="{{ client_data.manufacturer }}" readonly>
+                                                        <label for="manufacturer-{{loop.index}}">Device Manufacturer</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="os-{{loop.index}}" type="text" value="{{ client_data.os }}" readonly>
+                                                        <label for="os-{{loop.index}}">Device OS</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="user-{{loop.index}}" type="text" value="{{ client_data.user }}" readonly>
+                                                        <label for="user-{{loop.index}}">Device User</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="description-{{loop.index}}" type="text" value="{{ client_data.description }}" readonly>
+                                                        <label for="description-{{loop.index}}">Device Description</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="serial-{{loop.index}}" type="text" value="{{ client_data.recentDeviceSerial }}" readonly>
+                                                        <label for="serial-{{loop.index}}">Recent Device (Serial)</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="name-{{loop.index}}" type="text" value="{{ client_data.recentDeviceName }}" readonly>
+                                                        <label for="name-{{loop.index}}">Recent Device (Name)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group base-margin-bottom">
+                                                    <div class="form-group__text">
+                                                        <input id="connection-{{loop.index}}" type="text" value="{{ client_data.recentDeviceConnection }}" readonly>
+                                                        <label for="connection-{{loop.index}}">Connection Type</label>
+                                                    </div>
+                                                </div>
+
+                                                {% if client_data.recentDeviceConnection == 'Wireless'%}
+                                                    <div class="form-group base-margin-bottom">
+                                                        <div class="form-group__text">
+                                                            <input id="ssid-{{loop.index}}" type="text" value="{{ client_data.ssid }}" readonly>
+                                                            <label for="ssid-{{loop.index}}">SSID</label>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="form-group base-margin-bottom">
+                                                        <div class="form-group__text">
+                                                            <input id="switchport-{{loop.index}}" type="text" value="{{ client_data.switchport }}" readonly>
+                                                            <label for="switchport-{{loop.index}}">Switchport</label>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Right Rail -->
+                            <div class="col-0 col-xl-3 col-md-3"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row base-margin-bottom">
+                <div class="col-md-6">
+                    <div class="section">
+                        <!-- Button area-->
+                        <a href="{{ url_for('download_meraki_client') }}" class="btn btn-primary">Download Data</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <h5 class="display-4">Client Application Usage Data</h5>
+            <hr>
+            <!--Build Network Tabs-->
+            <ul id="bordered" class="tabs tabs--bordered" style="overflow-x: scroll">
+                <li id="bordered-0" class="tab active">
+                    <a tabindex="0">Summary</a>
+                </li>
+                {% for name in network_names %}
+                    <li id="bordered-{{loop.index}}" class="tab">
+                        <a tabindex="0">{{name}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div id="bordered-content" class="tab-content">
+                    <div id="bordered-0-content" class="tab-pane active">
+                        <div class="row">
+                            <!-- Middle Rail -->
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <div class="panel panel--loose panel--raised">
+                                        <div class="responsive-table">
+                                            <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Application</th>
+                                                        <th>Received (kilobytes)</th>
+                                                        <th>Sent (kilobytes)</th>
+                                                    </tr>
+                                                </thead>
+                                                {% set summary_name = summary_table[0] %}
+                                                {% set app_data = summary_table[1] %}
+                                                <tbody id="{{summary_name}}-table">
+                                                {% for key, value in app_data.items() %}
+                                                    <tr>
+                                                        <td>{{key}}</td>
+                                                        <td>{{value[0]}}</td>
+                                                        <td>{{value[1]}}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {% set pagination = summary_table[2] %}
+
+                                        <!-- Pagination section -->
+                                        {% if pagination != '' %}
+                                            <ul class="pagination" id="{{summary_name}}-pagination">
+                                                {{pagination | safe}}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Right Rail -->
+                            <div class="col-0 col-xl-3 col-md-3"></div>
+                        </div>
+                    </div>
+                {% for net_table in network_tables %}
+                    <div id="bordered-{{loop.index}}-content" class="tab-pane">
+                        <div class="row">
+                            <!-- Middle Rail -->
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <div class="panel panel--loose panel--raised">
+                                        <div class="responsive-table">
+                                            <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Application</th>
+                                                        <th>Received (kilobytes)</th>
+                                                        <th>Sent (kilobytes)</th>
+                                                    </tr>
+                                                </thead>
+                                                {% set network_name = net_table[0] %}
+                                                {% set app_data = net_table[1] %}
+                                                <tbody id="{{network_name}}-table">
+                                                {% for key, value in app_data.items() %}
+                                                    <tr>
+                                                        <td>{{key}}</td>
+                                                        <td>{{value[0]}}</td>
+                                                        <td>{{value[1]}}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {% set pagination = net_table[2] %}
+
+                                        <!-- Pagination section -->
+                                        {% if pagination != '' %}
+                                            <ul class="pagination" id="{{network_name}}-pagination">
+                                                {{pagination | safe}}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Right Rail -->
+                            <div class="col-0 col-xl-3 col-md-3"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="row base-margin-bottom">
+                <div class="col-md-6">
+                    <div class="section">
+                        <!-- Button area-->
+                        <a href="{{ url_for('download_usage') }}" class="btn btn-primary">Download Data</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+
+    // Define the function to update the table
+    function paginate(network, pageNumber) {
+      // Send an AJAX request to the server to get the new page data
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `/get_page_data?network=${network}&page=${pageNumber}`);
+      xhr.onload = function() {
+        // Parse the response JSON and update the table with the new data
+        const responseData = JSON.parse(xhr.responseText);
+
+        const tableBody = document.getElementById(`${network}-table`);
+        tableBody.innerHTML = '';
+
+        if (network == 'cdp') {
+            for (const [key, value] of Object.entries(responseData[0])) {
+              const row = `<tr><td>${value.neighbor}</td><td>${value.local_interface}</td><td>${value.capability}</td><td>${value.platform}</td><td>${value.neighbor_interface}</td></tr>`;
+              tableBody.innerHTML += row;
+            }
+        }  else if (network == 'lldp') {
+            for (const [key, value] of Object.entries(responseData[0])) {
+              const row = `<tr><td>${value.neighbor}</td><td>${value.local_interface}</td><td>${value.capabilities}</td><td>${value.neighbor_interface}</td></tr>`;
+              tableBody.innerHTML += row;
+            }
+        } else {
+            for (const [key, value] of Object.entries(responseData[0])) {
+              const row = `<tr><td>${key}</td><td>${value[0]}</td><td>${value[1]}</td></tr>`;
+              tableBody.innerHTML += row;
+            }
+        }
+
+        const paginationBody = document.getElementById(`${network}-pagination`);
+        paginationBody.innerHTML = responseData[1];
+
+      };
+      xhr.send();
+    }
+
+    // Define function to disable mac field's required tag if ip is provided
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = Array.from(
+        document.querySelectorAll('input[name=mac_address], input[name=ip_address]')
+      );
+
+      const inputListener = e => {
+        inputs
+          .filter(i => i !== e.target)
+          .forEach(i => (i.required = !e.target.value.length));
+      };
+
+      inputs.forEach(i => i.addEventListener('input', inputListener));
+    });
+
+    //Define on click event with submit button to trigger loading dots
+    $('#settings-submit').click(function() {
+        // Display the HTML code
+        var html = '<div class="progressbar" data-percentage="0" id="progressBar"><div class="progressbar__fill"></div><div class="progressbar__label">0%</div></div>';
+        $('#loading-panel').html(html);
+
+        // Start checking the progress
+        updateProgressBar(0);
+        setTimeout(checkProgress, 1000);
+    });
+
+    // Function to update the progress bar
+    function updateProgressBar(progress) {
+        const progressBar = document.getElementById('progressBar');
+        const progressBarLabel = progressBar.querySelector('.progressbar__label');
+
+        progressBar.setAttribute('data-percentage', progress);
+        progressBarLabel.textContent = `${progress}%`;
+    }
+
+    // Function to make an asynchronous request and update the progress bar
+    async function checkProgress() {
+        const response = await fetch('/progress');
+        const data = await response.json();
+
+        console.log(data.progress)
+
+        updateProgressBar(data.progress);
+        setTimeout(checkProgress, 1000);
+    }
+
+</script>
+
+{% endblock %}

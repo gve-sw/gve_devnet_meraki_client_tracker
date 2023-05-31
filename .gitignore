@@ -1,0 +1,7 @@
+# Python files and venv
+venv
+__pycache__/
+
+# IDE Files
+.idea/
+.DS_Store
