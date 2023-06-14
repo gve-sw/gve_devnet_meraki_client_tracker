@@ -35,6 +35,7 @@ def execute_switch_commands(connection, commands):
     connection.enable()
 
     # Send command
+    # TODO: could fail...
     output = connection.send_command(commands, use_textfsm=True)
 
     # Check if show output is valid

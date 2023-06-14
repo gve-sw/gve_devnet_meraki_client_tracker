@@ -86,7 +86,7 @@
 
             <div class="row">
                 <!-- Middle Rail -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="section">
                         <div class="panel panel--loose panel--raised">
                             <h2 class="subtitle">Client Status: Online</h2>
@@ -156,13 +156,15 @@
                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <div class="section">
                         <div class="panel panel--loose panel--raised">
                             <h2 class="subtitle">Switch CDP Neighbors</h2>
                             <hr>
                             <div class="responsive-table">
-                                <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                {% set cdp_name = cat_details_table_cdp[0] %}
+                                {% set cdp_data = cat_details_table_cdp[1] %}
+                                <table id="{{cdp_name}}-table-header" class="table table--striped table--bordered" aria-label="Bordered table example">
                                     <thead>
                                         <tr>
                                             <th>Neighbor</th>
@@ -172,8 +174,6 @@
                                             <th>Neighbor Interface</th>
                                         </tr>
                                     </thead>
-                                    {% set cdp_name = cat_details_table_cdp[0] %}
-                                    {% set cdp_data = cat_details_table_cdp[1] %}
                                     <tbody id="{{cdp_name}}-table">
                                     {% for value in cdp_data %}
                                         <tr>
@@ -187,16 +187,6 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            {% set pagination = cat_details_table_cdp[2] %}
-
-                            <!-- Pagination section -->
-                            {% if pagination != '' %}
-                                <ul class="pagination" id="{{cdp_name}}-pagination">
-                                    {{pagination | safe}}
-                                </ul>
-                            {% endif %}
-
                        </div>
                     </div>
                 </div>
@@ -206,7 +196,9 @@
                             <h2 class="subtitle">Switch LLDP Neighbors</h2>
                             <hr>
                             <div class="responsive-table">
-                                <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                {% set lldp_name = cat_details_table_lldp[0] %}
+                                {% set lldp_data = cat_details_table_lldp[1] %}
+                                <table id="{{lldp_name}}-table-header" class="table table--striped table--bordered" aria-label="Bordered table example">
                                     <thead>
                                         <tr>
                                             <th>Neighbor</th>
@@ -215,8 +207,6 @@
                                             <th>Neighbor Interface</th>
                                         </tr>
                                     </thead>
-                                    {% set lldp_name = cat_details_table_lldp[0] %}
-                                    {% set lldp_data = cat_details_table_lldp[1] %}
                                     <tbody id="{{lldp_name}}-table">
                                     {% for value in lldp_data %}
                                         <tr>
@@ -229,14 +219,6 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            {% set pagination = cat_details_table_lldp[2] %}
-                            <!-- Pagination section -->
-                            {% if pagination != '' %}
-                                <ul class="pagination" id="{{lldp_name}}-pagination">
-                                    {{pagination | safe}}
-                                </ul>
-                            {% endif %}
                        </div>
                     </div>
                 </div>
@@ -512,16 +494,16 @@
                                 <div class="section">
                                     <div class="panel panel--loose panel--raised">
                                         <div class="responsive-table">
-                                            <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                            {% set summary_name = summary_table[0] %}
+                                            {% set app_data = summary_table[1] %}
+                                            <table id="{{summary_name}}-table-header" class="table table--striped table--bordered" aria-label="Bordered table example">
                                                 <thead>
                                                     <tr>
                                                         <th>Application</th>
-                                                        <th>Received (kilobytes)</th>
-                                                        <th>Sent (kilobytes)</th>
+                                                        <th>Received</th>
+                                                        <th>Sent</th>
                                                     </tr>
                                                 </thead>
-                                                {% set summary_name = summary_table[0] %}
-                                                {% set app_data = summary_table[1] %}
                                                 <tbody id="{{summary_name}}-table">
                                                 {% for key, value in app_data.items() %}
                                                     <tr>
@@ -533,20 +515,16 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
-                                        {% set pagination = summary_table[2] %}
-
-                                        <!-- Pagination section -->
-                                        {% if pagination != '' %}
-                                            <ul class="pagination" id="{{summary_name}}-pagination">
-                                                {{pagination | safe}}
-                                            </ul>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                             <!-- Right Rail -->
-                            <div class="col-0 col-xl-3 col-md-3"></div>
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <canvas id="summaryChart" style="width:75%;max-width:700px"></canvas>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 {% for net_table in network_tables %}
@@ -557,16 +535,16 @@
                                 <div class="section">
                                     <div class="panel panel--loose panel--raised">
                                         <div class="responsive-table">
-                                            <table class="table table--striped table--bordered" aria-label="Bordered table example">
+                                            {% set network_name = net_table[0] %}
+                                            {% set app_data = net_table[1] %}
+                                            <table id="{{loop.index}}-table-header" class="table table--striped table--bordered" aria-label="Bordered table example">
                                                 <thead>
                                                     <tr>
                                                         <th>Application</th>
-                                                        <th>Received (kilobytes)</th>
-                                                        <th>Sent (kilobytes)</th>
+                                                        <th>Received</th>
+                                                        <th>Sent</th>
                                                     </tr>
                                                 </thead>
-                                                {% set network_name = net_table[0] %}
-                                                {% set app_data = net_table[1] %}
                                                 <tbody id="{{network_name}}-table">
                                                 {% for key, value in app_data.items() %}
                                                     <tr>
@@ -578,20 +556,15 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
-                                        {% set pagination = net_table[2] %}
-
-                                        <!-- Pagination section -->
-                                        {% if pagination != '' %}
-                                            <ul class="pagination" id="{{network_name}}-pagination">
-                                                {{pagination | safe}}
-                                            </ul>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                             <!-- Right Rail -->
-                            <div class="col-0 col-xl-3 col-md-3"></div>
+                            <div class="col-md-6">
+                                <div class="section">
+                                    <canvas id="{{loop.index}}-chart" style="width:75%;max-width:700px"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -611,41 +584,130 @@
 
 <script>
 
-    // Define the function to update the table
-    function paginate(network, pageNumber) {
-      // Send an AJAX request to the server to get the new page data
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/get_page_data?network=${network}&page=${pageNumber}`);
-      xhr.onload = function() {
-        // Parse the response JSON and update the table with the new data
-        const responseData = JSON.parse(xhr.responseText);
-
-        const tableBody = document.getElementById(`${network}-table`);
-        tableBody.innerHTML = '';
-
-        if (network == 'cdp') {
-            for (const [key, value] of Object.entries(responseData[0])) {
-              const row = `<tr><td>${value.neighbor}</td><td>${value.local_interface}</td><td>${value.capability}</td><td>${value.platform}</td><td>${value.neighbor_interface}</td></tr>`;
-              tableBody.innerHTML += row;
-            }
-        }  else if (network == 'lldp') {
-            for (const [key, value] of Object.entries(responseData[0])) {
-              const row = `<tr><td>${value.neighbor}</td><td>${value.local_interface}</td><td>${value.capabilities}</td><td>${value.neighbor_interface}</td></tr>`;
-              tableBody.innerHTML += row;
-            }
-        } else {
-            for (const [key, value] of Object.entries(responseData[0])) {
-              const row = `<tr><td>${key}</td><td>${value[0]}</td><td>${value[1]}</td></tr>`;
-              tableBody.innerHTML += row;
-            }
-        }
-
-        const paginationBody = document.getElementById(`${network}-pagination`);
-        paginationBody.innerHTML = responseData[1];
-
-      };
-      xhr.send();
+    // Function to convert values to bytes and round to 2 decimal places
+    function convertToBytes(value) {
+      var numericValue = parseFloat(value.replace(/[^\d.-]/g, '')); // Remove non-numeric characters
+      if (value.includes('GB')) {
+        return numericValue * 1024 * 1024 * 1024;  // Convert GB to bytes and round to 2 decimal places
+      } else if (value.includes('MB')) {
+        return numericValue * 1024 * 1024;  // Convert MB to bytes and round to 2 decimal places
+      } else if (value.includes('KB')) {
+        return numericValue * 1024;  // Convert KB to bytes and round to 2 decimal places
+      }
+      return numericValue; // Assume bytes if no unit specified and round to 2 decimal places
     }
+
+    function roundToTwo(num) {
+        return +(Math.round(num + "e+2")  + "e-2");
+    }
+
+      // Create App Usage Pie Chart
+      function drawChart() {
+        {% if table_flag == true %}
+            var barColors = [
+              "#69b93f",
+              "#add4eb",
+              "#f08b80",
+              "#d8a27e",
+              "#bebec6",
+              "#a2e6aa",
+              "#90ecdc",
+              "#fbed9d",
+              "#e5adeb",
+              "#6f8cdb",
+              "#783f24",
+              "#eabdef",
+              "#a6f0e3"
+            ];
+
+            // Create Summary Chart
+            var app_data = {{ summary_table|tojson }}[2]
+
+            new Chart("summaryChart", {
+              type: "pie",
+              data: {
+                labels: Object.keys(app_data),
+                datasets: [{
+                  backgroundColor: barColors,
+                  data: Object.values(app_data)
+                }]
+              },
+              options: {
+                title: {
+                  display: true,
+                  text: "Applications",
+                },
+                legend: {
+                  display: false
+                },
+                tooltips: {
+                    titleFontStyle: 'bold',
+                    callbacks: {
+                        title: (tooltipItem, data) => {
+                            var indice = tooltipItem[0].index;
+                            var key = data.labels[indice];
+
+                            var title = key.split("|")[0].trim();
+                            return title
+                        },
+                        label: (tooltipItem, data) => {
+                            var indice = tooltipItem.index;
+                            var key = data.labels[indice];
+
+                            var label = key.split("|")[1].trim();
+                            return label
+                        }
+                    }
+                }
+              }
+            });
+
+            // Create Network Charts
+            {% for net_table in network_tables %}
+                var app_data = {{ net_table|tojson }}[2]
+
+                new Chart("{{loop.index}}-chart", {
+                  type: "pie",
+                  data: {
+                    labels: Object.keys(app_data),
+                    datasets: [{
+                      backgroundColor: barColors,
+                      data: Object.values(app_data)
+                    }]
+                  },
+                  options: {
+                    title: {
+                      display: true,
+                      text: "Applications",
+                    },
+                    legend: {
+                      display: false
+                    },
+                    tooltips: {
+                        titleFontStyle: 'bold',
+                        callbacks: {
+                            title: (tooltipItem, data) => {
+                                var indice = tooltipItem[0].index;
+                                var key = data.labels[indice];
+
+                                var title = key.split("|")[0].trim();
+                                return title
+                            },
+                            label: (tooltipItem, data) => {
+                                var indice = tooltipItem.index;
+                                var key = data.labels[indice];
+
+                                var label = key.split("|")[1].trim();
+                                return label
+                            }
+                        }
+                    }
+                  }
+                });
+            {% endfor %}
+
+        {% endif %}
+      }
 
     // Define function to disable mac field's required tag if ip is provided
     document.addEventListener('DOMContentLoaded', function() {
@@ -662,7 +724,7 @@
       inputs.forEach(i => i.addEventListener('input', inputListener));
     });
 
-    //Define on click event with submit button to trigger loading dots
+    //Define on click event with submit button to trigger bar
     $('#settings-submit').click(function() {
         // Display the HTML code
         var html = '<div class="progressbar" data-percentage="0" id="progressBar"><div class="progressbar__fill"></div><div class="progressbar__label">0%</div></div>';
@@ -693,6 +755,26 @@
         setTimeout(checkProgress, 1000);
     }
 
+    $(document).ready( function () {
+        $('#cdp-table-header').DataTable();
+        $('#lldp-table-header').DataTable();
+
+        $('#summary-table-header').DataTable({
+            columnDefs: [
+              { type: 'file-size', targets: [1, 2] }  // Apply custom sorting to columns 1 and 2
+            ]
+        });
+
+        {% for name in network_names %}
+            $('#{{loop.index}}-table-header').DataTable({
+                columnDefs: [
+                  { type: 'file-size', targets: [1, 2] }  // Apply custom sorting to columns 2 and 3
+                ]
+            });
+        {% endfor %}
+    } );
+
+    drawChart()
 </script>
 
 {% endblock %}

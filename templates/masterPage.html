@@ -33,6 +33,12 @@
             <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
             <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
             <script src="{{ url_for('static', filename='js/selects.js') }}"></script>
+
+            <!-- Include the necessary CSS and JavaScript files for DataTables -->
+            <link href="{{ url_for('static', filename='DataTables/datatables.min.css') }}" rel="stylesheet"/>
+            <script src="{{ url_for('static', filename='DataTables/datatables.min.js') }}"></script>
+            <script src="{{ url_for('static', filename='DataTables/file-size.js') }}"></script>
+
         </head>
         <body class="cui">
     

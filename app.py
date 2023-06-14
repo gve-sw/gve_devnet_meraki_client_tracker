@@ -18,7 +18,6 @@ __copyright__ = "Copyright (c) 2023 Cisco and/or its affiliates."
 __license__ = "Cisco Sample Code License, Version 1.1"
 
 import datetime
-import math
 import threading
 from io import BytesIO
 
@@ -158,72 +157,6 @@ def convert_to_sec(time_period):
         return int(time_period) * 3600
 
 
-def calculate_page(target, page, type):
-    """
-    Return page of data for the specific network, return pagination display information for navigation
-    :param type: Determines dataset to create a page for
-    :param target: Target data set
-    :param page: Current Page
-    :return: Page information for that network and page
-    """
-    if type == "usage":
-        target_data = {}
-
-        # App Usage case (find network dataset)
-        if target == 'summary':
-            target_data = meraki_details.usage['summary']
-        else:
-            for net in meraki_details.usage['networks']:
-                if net['network_name'] == target:
-                    target_data = net['applications']
-
-        # If empty, no application data found for client in network
-        if not target_data:
-            return target_data, None
-
-        # Determine total number of pages
-        items_per_page = 10
-
-        total_pages = int(math.ceil(len(target_data) / items_per_page))
-
-        # Convert dictionary to a list of tuples for easy slicing
-        target_data = list(target_data.items())
-
-        # Slice data to get items for the requested page
-        start_index = (page - 1) * items_per_page
-        end_index = start_index + items_per_page
-        page_data = dict(target_data[start_index:end_index])
-
-    else:
-        # Catalyst CDP and LLDP Case
-        if target == 'cdp':
-            target_data = cat_details.cdp
-        else:
-            target_data = cat_details.lldp
-
-        # Determine total number of pages
-        items_per_page = 5
-
-        total_pages = int(math.ceil(len(target_data) / items_per_page))
-
-        # Slice data to get items for the requested page
-        start_index = (page - 1) * items_per_page
-        end_index = start_index + items_per_page
-        page_data = target_data[start_index:end_index]
-
-    # pagination display information
-    pagination = {
-        'page': page,
-        'first_page': 1,
-        'last_page': total_pages,
-        'previous_page': page - 1 if page - 1 > 0 else 1,
-        'next_page': page + 1 if page + 1 < total_pages else total_pages,
-        'page_count': total_pages
-    }
-
-    return page_data, pagination
-
-
 # Flask Routes
 @app.route('/')
 def index():
@@ -311,18 +244,10 @@ def submit():
     # Catalyst Details Section
     if cat_details:
         # CDP Table
-        page_data, pagination = calculate_page('cdp', 1, 'catalyst')
-
-        # Build new pagination html
-        cdp_pagination_html = render_template('pagination.html', network_name='cdp', pagination=pagination)
-        cat_details_cdp = ('cdp', page_data, cdp_pagination_html)
+        cat_details_cdp = ('cdp', cat_details.cdp)
 
         # LLDP Table
-        page_data, pagination = calculate_page('lldp', 1, 'catalyst')
-
-        # Build new pagination html
-        lldp_pagination_html = render_template('pagination.html', network_name='lldp', pagination=pagination)
-        cat_details_lldp = ('lldp', page_data, lldp_pagination_html)
+        cat_details_lldp = ('lldp', cat_details.lldp)
 
     else:
         cat_details_cdp = None
@@ -338,60 +263,38 @@ def submit():
                 target_data = net
                 break
 
-        if not target_data:
-            network_client_details.append((network, None))
-        else:
+        if len(target_data) > 0:
             network_client_details.append((network, target_data['client_details']))
+        else:
+            network_client_details.append((network, None))
 
     # Usage Section
-    # Add Summary information for display
-    page_data, pagination = calculate_page('summary', 1, 'usage')
-
-    # Build new pagination html
-    pagination_html = render_template('pagination.html', network_name='summary', pagination=pagination)
-    summary_applications = ('summary', page_data, pagination_html)
+    summary_applications = ('summary', meraki_details.usage['summary'], meraki_details.usage_pie_chart['summary'])
 
     # Add all other network information
     network_applications = []
     for network in meraki_details.sorted_net_names:
-        page_data, pagination = calculate_page(network, 1, 'usage')
+        for net in meraki_details.usage['networks']:
+            if net['network_name'] == network:
+                target_usage = net['applications']
+                break
 
-        # Build new pagination html
-        pagination_html = render_template('pagination.html', network_name=network, pagination=pagination)
-        network_applications.append((network, page_data, pagination_html))
+        for net in meraki_details.usage_pie_chart['networks']:
+            if net['network_name'] == network:
+                target_usage_pie_chart = net['applications']
+                break
+
+        network_applications.append((network, target_usage, target_usage_pie_chart))
 
     progress = 100
 
     # Render template with pagination links and data for the requested page
     return render_template('index.html', hiddenLinks=False, timeAndLocation=getSystemTimeAndLocation(), table_flag=True,
                            network_names=meraki_details.sorted_net_names,
-                           mac_address=meraki_details.usage['client_mac'],
+                           mac_address=meraki_details.mac,
                            summary_table=summary_applications, network_tables=network_applications,
                            details_tables=network_client_details, cat_details_table=cat_details,
                            cat_details_table_cdp=cat_details_cdp, cat_details_table_lldp=cat_details_lldp)
-
-
-@app.route('/get_page_data')
-def get_page_data():
-    """
-    Handle AJAX requests for getting different pages of a table
-    :return: JSON string of a portion of the table and updated pagination display
-    """
-
-    # Parse Params
-    network = request.args.get('network', 1, type=str)
-    page = request.args.get('page', 2, type=int)
-
-    # Get new table display information for request
-    if network == 'cdp' or network == 'lldp':
-        page_data, pagination = calculate_page(network, page, 'catalyst')
-    else:
-        page_data, pagination = calculate_page(network, page, 'usage')
-
-    # Build new pagination html
-    pagination_html = render_template('pagination.html', network_name=network, pagination=pagination)
-
-    return jsonify([page_data, pagination_html])
 
 
 @app.route('/progress')
@@ -601,7 +504,7 @@ def download_usage():
         sheets.append(sheet)
 
     # Define Column Headers (Usage)
-    fields = ['Application', 'Received (kilobytes)', 'Sent (kilobytes)']
+    fields = ['Application', 'Received', 'Sent']
     header_format = workbook.add_format({'bold': True, 'bottom': 2})
 
     for sheet in sheets:
@@ -636,6 +539,5 @@ def download_usage():
     return response
 
 
-# TODO: comment, readme
 if __name__ == '__main__':
     app.run(port=5000)
