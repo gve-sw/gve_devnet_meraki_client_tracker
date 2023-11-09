@@ -17,11 +17,17 @@ __author__ = "Trevor Maco <tmaco@cisco.com>"
 __copyright__ = "Copyright (c) 2023 Cisco and/or its affiliates."
 __license__ = "Cisco Sample Code License, Version 1.1"
 
+import os
+
 import meraki
+from dotenv import load_dotenv
 from meraki import APIError
 from rich.console import Console
 
-from config import *
+# Load ENV Variable
+load_dotenv()
+MERAKI_API_KEY = os.getenv("MERAKI_API_KEY")
+ORG_NAME = os.getenv("ORG_NAME")
 
 # Rich Console Instance
 console = Console()

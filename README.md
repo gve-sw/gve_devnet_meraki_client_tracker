@@ -35,12 +35,13 @@ In order to use the Meraki API, you need to enable the API for your organization
 
 ## Installation/Configuration
 1. Clone this repository with `git clone [repository name]`
-2. Add Meraki API key and Organization Name to environment variables located in `config.py`
+2. Rename the `.env_sample` file to `.env`. Rename `config_sample.py` to `config.py`.
+3. Add Meraki API key and Organization Name to environment variables located in `.env`
 ```python
 MERAKI_API_KEY = ""
 ORG_NAME = ""
 ```
-3. Add Catalyst Switch information to the list in `config.py`. These Switches will be queried by the application. 
+4. Add Catalyst Switch information to the list in `config.py`. These Switches will be queried by the application. 
 ```python
 SWITCH_INFO = [
      {
@@ -54,8 +55,8 @@ SWITCH_INFO = [
 ```
 **Note:** Please ensure SSH is configured on each Catalyst Switch, as this is required for the Netmiko SSH connection. For more information on Netmiko, consult this [guide](https://pyneng.readthedocs.io/en/latest/book/18_ssh_telnet/netmiko.html). 
 
-4. Set up a Python virtual environment. Make sure Python 3 is installed in your environment, and if not, you may download Python [here](https://www.python.org/downloads/). Once Python 3 is installed in your environment, you can activate the virtual environment with the instructions found [here](https://docs.python.org/3/tutorial/venv.html).
-5. Install the requirements with `pip3 install -r requirements.txt`
+5. Set up a Python virtual environment. Make sure Python 3 is installed in your environment, and if not, you may download Python [here](https://www.python.org/downloads/). Once Python 3 is installed in your environment, you can activate the virtual environment with the instructions found [here](https://docs.python.org/3/tutorial/venv.html).
+6. Install the requirements with `pip3 install -r requirements.txt`
 
 ## Usage
 To run the program, use the command:

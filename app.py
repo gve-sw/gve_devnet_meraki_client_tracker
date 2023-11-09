@@ -28,7 +28,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from catalyst_client import CatalystClientInfo
-from config import *
+import config
 from meraki_client import MerakiClientInfo
 
 # Flask Config
@@ -217,7 +217,7 @@ def submit():
 
     # Get catalyst client details for client mac address (disconnect from switch if data is found) - search all switches
     threads = []
-    for switch in SWITCH_INFO:
+    for switch in config.SWITCH_INFO:
         t = threading.Thread(target=catalyst_client_information, args=(mac_address, ip_address, switch,))
         threads.append(t)
 
